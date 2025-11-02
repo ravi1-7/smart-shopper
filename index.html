@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Shopper - Find Best Deals Near You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .location-info.detected {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .deal-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .deal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .deal-rank {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .deal-title {
+            flex: 1;
+            margin: 0 15px;
+        }
+
+        .deal-title h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .deal-store {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .deal-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2e7d32;
+            flex-shrink: 0;
+        }
+
+        .deal-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .deal-snippet {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .store-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .store-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        .deal-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-link {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-link:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-product {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-maps {
+            background: #4285f4;
+            color: white;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .deal-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .deal-title {
+                margin: 0;
+            }
+
+            .deal-links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 Smart Shopper</h1>
+            <p class="subtitle">Find the best deals near you instantly</p>
+        </header>
+
+        <div class="search-card">
+            <div class="input-group">
+                <label for="product">What are you shopping for?</label>
+                <input type="text" id="product" placeholder="e.g., eggs, milk, bread..." autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Your Location</label>
+                <div id="locationStatus" class="location-info">
+                    <span>📍</span>
+                    <span id="locationText">Detecting your location...</span>
+                </div>
+            </div>
+
+            <button id="searchBtn" onclick="searchDeals()">Find Best Deals</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Searching for the best deals near you...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        let userLocation = null;
+
+        // Auto-detect location on page load
+        window.addEventListener('load', () => {
+            detectLocation();
+        });
+
+        // Allow search on Enter key
+        document.getElementById('product').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchDeals();
+            }
+        });
+
+        function detectLocation() {
+            if (!navigator.geolocation) {
+                updateLocationStatus('Geolocation not supported', false);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+
+                    // Reverse geocode to get address
+                    try {
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                        );
+                        const data = await response.json();
+
+                        const city = data.address.city || data.address.town || data.address.village || '';
+                        const state = data.address.state || '';
+                        const zipcode = data.address.postcode || '';
+
+                        userLocation = {
+                            lat: latitude,
+                            lng: longitude,
+                            address: `${city}, ${state} ${zipcode}`.trim()
+                        };
+
+                        updateLocationStatus(userLocation.address, true);
+                    } catch (error) {
+                        userLocation = {
+                            lat: latitude,
+                            lng: longitude,
+                            address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                        };
+                        updateLocationStatus(userLocation.address, true);
+                    }
+                },
+                (error) => {
+                    updateLocationStatus('Location access denied - using default (College Park, MD)', false);
+                    userLocation = {
+                        address: 'College Park, MD 20740'
+                    };
+                }
+            );
+        }
+
+        function updateLocationStatus(text, detected) {
+            const statusEl = document.getElementById('locationStatus');
+            const textEl = document.getElementById('locationText');
+
+            textEl.textContent = text;
+
+            if (detected) {
+                statusEl.classList.add('detected');
+            } else {
+                statusEl.classList.remove('detected');
+            }
+        }
+
+        async function searchDeals() {
+            const product = document.getElementById('product').value.trim();
+
+            if (!product) {
+                showError('Please enter a product name');
+                return;
+            }
+
+            if (!userLocation) {
+                showError('Waiting for location... Please try again in a moment');
+                return;
+            }
+
+            // Hide previous results and errors
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('searchBtn').disabled = true;
+
+            // Try multiple backend URLs
+            const backendUrls = [
+                'http://127.0.0.1:5000/api/search',
+                'http://localhost:5000/api/search'
+            ];
+
+            for (const url of backendUrls) {
+                try {
+                    // Call your backend API
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            product: product,
+                            location: userLocation.address
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch deals');
+                    }
+
+                    const deals = await response.json();
+                    displayResults(deals, product);
+
+                    // Success! Exit the function
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('searchBtn').disabled = false;
+                    return;
+
+                } catch (error) {
+                    // Try next URL
+                    console.log(`Failed to connect to ${url}:`, error);
+                }
+            }
+
+            // If we got here, all URLs failed
+            showError('Unable to connect to server. Make sure your backend is running on port 5000 and CORS is enabled.');
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('searchBtn').disabled = false;
+        }
+
+        function displayResults(deals, product) {
+            const resultsDiv = document.getElementById('results');
+
+            if (!deals || deals.length === 0) {
+                showError('No deals found. Try a different product or location.');
+                return;
+            }
+
+            let html = `<h2 style="color: white; text-align: center; margin-bottom: 20px;">🏆 Top Deals for "${product}"</h2>`;
+
+            deals.forEach((deal, index) => {
+                html += `
+                    <div class="deal-card">
+                        <div class="deal-header">
+                            <div class="deal-rank">${index + 1}</div>
+                            <div class="deal-title">
+                                <h3>${deal.product_name}</h3>
+                                <div class="deal-store">from ${deal.store_name}</div>
+                            </div>
+                            <div class="deal-price">${deal.price_str}</div>
+                        </div>
+                        
+                        <div class="deal-info">
+                            ${deal.snippet ? `<div class="deal-snippet">${deal.snippet}</div>` : ''}
+                            
+                            ${deal.store_address ? `
+                                <div class="store-details">
+                                    <div class="store-detail">
+                                        <span class="icon">📍</span>
+                                        <span>${deal.store_address}</span>
+                                    </div>
+                                    <div class="store-detail">
+                                        <span class="icon">🚗</span>
+                                        <span>${deal.distance} (${deal.duration})</span>
+                                    </div>
+                                </div>
+                            ` : '<div style="color: #999; font-size: 0.9rem;">Online or local store not found</div>'}
+                        </div>
+                        
+                        <div class="deal-links">
+                            <a href="${deal.product_link}" target="_blank" class="btn-link btn-product">View Product</a>
+                            ${deal.store_maps_link ? `
+                                <a href="${deal.store_maps_link}" target="_blank" class="btn-link btn-maps">Open in Maps</a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.add('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>
