@@ -4,41 +4,48 @@ A web app that finds the cheapest and closest stores for a grocery item, designe
 
 ## Features
 
-- Price Comparison: Finds the top 4-7 cheapest deals from Google Shopping.
-
-- Store Localization: For each deal, finds the nearest physical store.
-
-- Travel Integration: Calculates the real-world driving distance and time.
-
-- All-in-One Results: Displays a sorted list of products, prices, store locations, and travel times with links to the product and maps.
+- **Price Comparison**: Finds the top 4-7 cheapest deals from Google Shopping.
+- **Store Localization**: For each deal, finds the nearest physical store.
+- **Travel Integration**: Calculates the real-world driving distance and time.
+- **All-in-One Results**: Displays a sorted list of products, prices, store locations, and travel times with links to the product and maps.
 
 ## Tech Stack & Architecture
 
-- Backend: Python 3, Flask
+- **Backend**: Python 3, Flask
+- **Frontend**: HTML, Tailwind CSS, JavaScript (Fetch API)
 
-- Frontend: HTML, Tailwind CSS, JavaScript (Fetch API)
+### APIs:
 
-## APIs:
-
-1. Google Geocoding: Converts user's location string to coordinates.
-
-2. Serper API (Google Shopping): Fetches product deals (price, name, store).
-
-3. Google Places API: Finds the nearest physical store address for each deal.
-
-4. Google Distance Matrix API: Calculates travel time and distance.
+1. **Google Geocoding**: Converts user's location string to coordinates.
+2. **Serper API (Google Shopping)**: Fetches product deals (price, name, store).
+3. **Google Places API**: Finds the nearest physical store address for each deal.
+4. **Google Distance Matrix API**: Calculates travel time and distance.
 
 ## How to Run Locally
 
-Clone: git clone https://github.com/your-username/smart-shopper.git
+1. **Clone**:
+```bash
+   git clone https://github.com/your-username/smart-shopper.git
+   cd smart-shopper
+```
 
-Install: pip install -r requirements.txt
+2. **Install**:
+```bash
+   pip install -r requirements.txt
+```
 
-Set API Keys: Set SERPAPI_API_KEY and Maps_API_KEY (with Geocoding, Places, and Distance Matrix APIs enabled) as environment variables.
+3. **Set API Keys**: Set `SERPER_API_KEY` and `GOOGLE_MAPS_API_KEY` (with Geocoding, Places, and Distance Matrix APIs enabled) as environment variables:
+```bash
+   export SERPER_API_KEY="your_serper_key_here"
+   export GOOGLE_MAPS_API_KEY="your_google_maps_key_here"
+```
 
-Run: python app.py
+4. **Run**:
+```bash
+   python app.py
+```
 
-Open: Visit http://127.0.0.1:5001 in your browser.
+5. **Open**: Visit `http://127.0.0.1:5000` in your browser.
 
 ## Key Learning
 
