@@ -1,0 +1,5 @@
+Flask
+Flask-Cors
+requests
+google-api-python-client
+google-search-results
