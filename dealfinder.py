@@ -9,14 +9,14 @@ from dataclasses import dataclass, field
 # --- CONFIGURATION ---
 
 # 1. Serper API Key (from you) for Google Shopping search
-SERPER_API_KEY = "ef77c1481fbec9baad24a5a4bae00e76b982e10f"
+SERPER_API_KEY = ""
 
 # 2. Google Maps API Key (from your previous code)
 #    You MUST enable these 3 APIs in your Google Cloud project:
 #    - Geocoding API
 #    - Places API
 #    - Distance Matrix API
-GOOGLE_MAPS_API_KEY = "AIzaSyD4t3RmmWjENJgWyeLo-qx5I0GRXbQUDxY"
+GOOGLE_MAPS_API_KEY = ""
 
 
 # Initialize Google Maps client
